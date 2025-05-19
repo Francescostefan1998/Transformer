@@ -48,29 +48,32 @@ for j in range(8):
 print(f'original matrix of attention weights : {context_vec_2}')
 # try with raw math to get this straight
 # from the embedded sentence getting the scalars for the new matrix calculating the dot product between the two vectors
-for i in range(len(embedded_sentence)):
-    attention_weightss = []
-    for j in range(len(embedded_sentence)): 
-        a = 0
-        for index in range(len(embedded_sentence[j])):
-            a += embedded_sentence[j][index] * embedded_sentence[i][index]
-        attention_weightss.append(a)
-    sum_of_exponential = 0
-    s_m_values = []
-    for exp in range(len(attention_weightss)):
-        sum_of_exponential = sum_of_exponential + math.exp(attention_weightss[exp]) # math.exp is the equivalent to the concept e^exp
-    for index_att in range(len(attention_weightss)):
-        single_soft_valu = math.exp(attention_weightss[index_att]) / sum_of_exponential
-        s_m_values.append(single_soft_valu)
-    zi_vectors_prev = []
+# for i in range(len(embedded_sentence)):
+#     attention_weightss = []
+#     for j in range(len(embedded_sentence)): 
+#         a = 0
+#         for index in range(len(embedded_sentence[j])):
+#             a += embedded_sentence[j][index] * embedded_sentence[i][index]
+#         attention_weightss.append(a)
+#     sum_of_exponential = 0
+#     s_m_values = []
+#     for exp in range(len(attention_weightss)):
+#         sum_of_exponential = sum_of_exponential + math.exp(attention_weightss[exp]) # math.exp is the equivalent to the concept e^exp
+#     for index_att in range(len(attention_weightss)):
+#         single_soft_valu = math.exp(attention_weightss[index_att]) / sum_of_exponential
+#         s_m_values.append(single_soft_valu)
+#     zi_vectors_prev = []
 
-    att_for_all_weight = [0] * len(embedded_sentence[i]) # initializing all weight at 0
-    for indAttW in range(len(s_m_values)):
-        att_for_spec_weight = []
-        for indInsWord in range(len(embedded_sentence[i])):
-            att_for_spec_weight.append(s_m_values[indAttW] * embedded_sentence[i][indInsWord])
-        for at_ind_sp in range(len(att_for_spec_weight)):
-            att_for_all_weight[at_ind_sp] += att_for_spec_weight[at_ind_sp]
+#     att_for_all_weight = [0] * len(embedded_sentence[i]) # initializing all weight at 0
+#     for indAttW in range(len(s_m_values)):
+#         att_for_spec_weight = []
+#         for indInsWord in range(len(embedded_sentence[i])):
+#             att_for_spec_weight.append(s_m_values[indAttW] * embedded_sentence[i][indInsWord])
+#         for at_ind_sp in range(len(att_for_spec_weight)):
+#             att_for_all_weight[at_ind_sp] += att_for_spec_weight[at_ind_sp]
 
-    print(f'Manual att for all weight: {att_for_all_weight}')
-        
+#     print(f'Manual att for all weight: {att_for_all_weight}')
+
+# We can achieve this more efficiently using matrix multiplication as follow 
+context_vectors = torch.matmul(attention_weights, embedded_sentence)
+print(torch.allclose(context_vec_2, context_vectors[1]))
