@@ -1,6 +1,7 @@
 
 import torch
 import math
+import torch.nn.functional as F # Add this line
 sentence = torch.tensor(
     [0, # can
      7, # you
@@ -48,3 +49,23 @@ print(omega_23)
 # the following code calculate the unormalized attention weight for w2
 omega_2 = query_2.matmul(keys.T)
 print(omega_2)
+# now we normalize the weights
+attention_weight_2 = F.softmax(omega_2 / d**0.5, dim=0)
+print(attention_weight_2)
+# finally we can calculate z(i)
+context_vector_2 = attention_weight_2.matmul(values)
+print(context_vector_2)
+# Multi-head attention
+torch.manual_seed(123)
+d = embedded_sentence.shape[1]
+one_U_query = torch.rand(d, d)
+# 8 head
+h = 8
+multihead_U_query = torch.rand(h, d, d)
+multihead_U_key = torch.rand(h, d, d)
+multihead_U_value = torch.rand(h, d, d)
+multihead_query_2 = multihead_U_query.matmul(x_2)
+print(multihead_query_2.shape)
+multihead_key_2 = multihead_U_key.matmul(x_2)
+multihead_value_2 = multihead_U_value.matmul(x_2)
+print(multihead_key_2[2])
