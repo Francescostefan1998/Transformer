@@ -45,16 +45,16 @@ print(torch.allclose(value_2, values[1]))
 # we now compute the the wij as the dot product wij = qiT*kj
 # for example the following code calculated the unnormalized attention weight for w23
 omega_23 = query_2.dot(keys[2])
-print(omega_23)
+# print(omega_23)
 # the following code calculate the unormalized attention weight for w2
 omega_2 = query_2.matmul(keys.T)
-print(omega_2)
+# print(omega_2)
 # now we normalize the weights
 attention_weight_2 = F.softmax(omega_2 / d**0.5, dim=0)
-print(attention_weight_2)
+# print(attention_weight_2)
 # finally we can calculate z(i)
 context_vector_2 = attention_weight_2.matmul(values)
-print(context_vector_2)
+# print(context_vector_2)
 # Multi-head attention
 torch.manual_seed(123)
 d = embedded_sentence.shape[1]
@@ -69,3 +69,18 @@ print(multihead_query_2.shape)
 multihead_key_2 = multihead_U_key.matmul(x_2)
 multihead_value_2 = multihead_U_value.matmul(x_2)
 print(multihead_key_2[2])
+
+stacked_inputs = embedded_sentence.T.repeat(8, 1, 1)
+print(stacked_inputs.shape)
+multihead_keys = torch.bmm(multihead_U_key, stacked_inputs)
+print(multihead_keys.shape)
+multihead_keys = multihead_keys.permute(0, 2, 1)
+print(multihead_keys.shape)
+print(multihead_keys[2, 1])
+multihead_values = torch.matmul(multihead_U_value, stacked_inputs)
+multihead_values = multihead_values.permute(0, 2, 1)
+multihead_z_2 = torch.rand(8, 16)
+
+linear = torch.nn.Linear(8*16, 16)
+context_vector_2 = linear(multihead_z_2.flatten())
+print(context_vector_2.shape)
